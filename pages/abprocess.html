@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ArcByte Documents</title>
+<link rel="icon" href="./logos/favicon.png" type="image/x-icon" />
+
+<style>
+:root {
+    --bg: #ffffff;
+    --text: #111;
+    --muted: #666;
+    --hover: #f3f3f3;
+    --active: #E0E0E0;
+    --sidebar-bg: #F2F2F2;
+}
+
+* {
+    margin: 0;
+    padding: 0;s
+    box-sizing: border-box;
+    font-family: Inter, system-ui, sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* ================= Sidebar ================= */
+.sidebar {
+    position: fixed;
+    top: 44;
+    left: 0;
+    height: calc(100vh - 44px);
+    width: 240px;
+    padding: 20px 16px;
+    background: var(--sidebar-bg);
+    border-radius: 0 30px 30px 0;
+    transition: width .25s ease;
+}
+
+.sidebar.collapsed { width: 72px; }
+
+.sidebar-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding-left: 8px;
+    margin-bottom: 28px;
+}
+
+.logo-text {
+    font-size: 21px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.toggle {
+    position: absolute;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.sidebar.collapsed .logo-text { opacity: 0; pointer-events: none; }
+
+.subtitle-text {
+    font-size: 15px;
+    padding-left: 8px;
+    margin: 26px 0 10px;
+    font-weight: 500;
+}
+
+.sidebar.collapsed .subtitle-text {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.nav a {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    text-decoration: none;
+    color: var(--text);
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.nav a:hover { background: var(--hover); }
+.nav a.active { background: var(--active); }
+
+.sidebar.collapsed .nav span { display: none; }
+.sidebar.collapsed .nav a { justify-content: center; }
+
+/* ================= Main ================= */
+.main {
+    margin-top: 44px;
+    margin-left: 240px;
+    transition: margin-left .25s ease;
+}
+
+.sidebar.collapsed ~ .main { margin-left: 72px; }
+
+/* ================= Top Bar ================= */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 100px;
+}
+
+.search-box input {
+    width: 320px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+
+.user-pill {
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+/* ================= Hero ================= */
+.hero {
+    padding: 40px 100px 0px;
+}
+
+.hero h1 {
+    font-size: 36px;
+    margin-bottom: 6px;
+}
+
+.hero p {
+    color: var(--muted);
+}
+
+/* ================= Directory ================= */
+.directory {
+    padding: 100px;
+    max-width: 1400px;
+}
+
+.directory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+}
+
+.doc-card {
+    border-radius: 20px;
+    background: #fafafa;
+    overflow: hidden;
+    transition: background .15s ease, transform .15s ease;
+}
+
+.doc-card:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.doc-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+.doc-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.doc-content {
+    padding: 22px;
+}
+
+.doc-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.doc-meta {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+}
+
+.doc-links a {
+    display: inline-block;
+    margin-right: 12px;
+    font-size: 13px;
+    text-decoration: none;
+    color: #111;
+}
+
+/* ================= Announcement ================= */
+/* ================= Announcement ================= */
+.announcement-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 44px;
+    background: #111;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    z-index: 1000;
+}
+
+.announcement-close {
+    position: absolute;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sidebar {
+    top: 0;
+    height: 100vh;
+}
+
+/* ================= Layout Offset ================= */
+
+/* Sidebar 下移 */
+body.has-announcement .sidebar {
+    top: 44px;
+    height: calc(100vh - 44px);
+}
+
+/* Top bar 下移（🔥 搜索框就在这） */
+body.has-announcement .top-bar {
+    margin-top: 44px;
+}
+
+/* Main 不再整体下移 */
+.main {
+    margin-top: 0;
+}
+
+.doc-links a:hover { text-decoration: underline; }
+
+/* ================= Responsive ================= */
+@media (max-width: 900px) {
+    .directory-grid { grid-template-columns: repeat(2, 1fr); }
+    .search-box input { width: 220px; }
+}
+
+@media (max-width: 600px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .directory { padding: 24px; }
+    .top-bar { padding: 16px 24px; }
+    .directory-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="announcement-bar">
+    <span data-i18n="announcement">
+        📢 Notice: Some policies are under review and may be updated.
+    </span>
+    <button class="announcement-close" onclick="closeAnnouncement()">✕</button>
+</div>
+
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo-text">ArcByte Documents</div>
+        <button class="toggle" onclick="toggleSidebar()">☰</button>
+    </div>
+
+    <div class="subtitle-text">ArcByte</div>
+    <nav class="nav">
+        <a href="./abrules.html"><span data-i18n="abrules">Crew Rules</span></a>
+        <a href="./abregs.html"><span data-i18n="abregs">Regulations</span></a>
+        <a href="./abprocess.html" class="active"><span data-i18n="abprocess">Processes</span></a>
+        <a href="./abpriority.html"><span data-i18n="abpriority">Priority</span></a>
+    </nav>
+
+    <div class="subtitle-text">ArcAI</div>
+    <nav class="nav">
+        <a href="./aairules.html"><span data-i18n="aairules">Crew Rules</span></a>
+        <a href="./aairegs.html"><span data-i18n="aairegs">Regulations</span></a>
+        <a href="./aaionline.html"><span data-i18n="aaionline">Online Safety</span></a>
+        <a href="./aaiprivacy.html"><span data-i18n="aaiprivacy">Privacy & Security</span></a>
+        <a href="./aaiother.html"><span data-i18n="aaiother">Other</span></a>
+    </nav>
+
+    <div class="subtitle-text">ANC Esports</div>
+    <nav class="nav">
+        <a href="./ancrules.html"><span data-i18n="ancrules">Crew Rules</span></a>
+        <a href="./ancother.html"><span data-i18n="ancother">Other</span></a>
+    </nav>
+</aside>
+
+<main class="main">
+
+    <div class="top-bar">
+        <div class="search-box">
+            <input type="text" placeholder="Search policies, documents…" data-i18n-placeholder="search" />
+        </div>
+        <div style="display:flex; gap:12px; align-items:center;">
+            <select id="langSwitcher" onchange="setLanguage(this.value)" style="padding:8px 12px; border-radius:999px; border:1px solid #ddd; font-size:13px;">
+                <option value="en">English (United States)</option>
+                <option value="zh">简体中文</option>
+            </select>
+            <a href="https://account.arcbytecn.com" class="user-pill" data-i18n="account">My Account</a>
+        </div>
+    </div>
+
+    <section class="hero">
+        <h1 data-i18n="title">Company Policy Directory</h1>
+        <p data-i18n="subtitle">Find official policies, internal documents, and governance materials.</p>
+    </section>
+
+    <section class="directory">
+    <div class="directory-grid">
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text1title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text2title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text3title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text4title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text5title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text6title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text7title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text8title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text9title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text10title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text11title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text12title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text13title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="doc-card">
+            <div class="doc-image">
+                <img src="images/docs_logo.png" alt="ArcByte Docs Cover">
+            </div>
+            <div class="doc-content">
+                <div class="doc-title"><span data-i18n="text14title">Code of Conduct</span></div>
+                <div class="doc-meta">General Affairs · Updated Jan 2026</div>
+                <div class="doc-links">
+                    <a href="#"><span data-i18n="view">View</span></a>
+                    <a href="#"><span data-i18n="downloadpdf">Download PDF</span></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+</main>
+
+<script>
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("collapsed");
+}
+const translations = {
+    en: {
+        search: "Search policies, documents…",
+        account: "Login",
+        company: "Company",
+        allDocs: "All Documents",
+        policies: "Policies",
+        handbooks: "Handbooks",
+        guidelines: "Guidelines",
+        departments: "Departments",
+        other: "Other",
+        title: "ArcByte Documents Center",
+	view: "View",
+	downloadpdf: "Download PDF",
+        subtitle: "Find official policies, internal documents, and governance materials from ArcByte.",
+	abrules: "Crew Policies",
+	abregs: "Regulations",
+	abprocess: "Processes",
+	abpriority: "Priority",
+	aairules: "Crew Policies",
+	aairegs: "Regulations",
+	aaionline: "Online Safety",
+	aaiprivacy: "Privacy and Security",
+	aaiother: "Other",
+	ancrules: "Crew Policies",
+	ancother: "Other",
+	text1title: "Data Handling Process",
+	text2title: "Cyber Security Management Process",
+	text3title: "Data Breach Response Process",
+	text4title: "Content Moderation Process",
+	text5title: "User Safety & Complaints Process",
+	text6title: "Consumer Protection Process",
+	text7title: "Intellectual Property Handling Process",
+	text8title: "Child & Minor Protection Process",
+	text9title: "Accessibility Compliance Process",
+	text10title: "Financial & Payment Proccessing Process",
+	text11title: "Employment & HR Process",
+	text12title: "Compliance Monitoring & Audit Process",
+	text13title: "Transparency & Accountability Process",
+	text14title: "AI & Automated Decision Process",
+	announcement: "📢 Thank you for using the ArcByte Documents Center. We are currently working hard to prepare the Page, and it is not yet fully operational. You can check the progress at status.arcbytecn.com!",
+    },
+    zh: {
+        search: "搜索政策和文件…",
+        account: "立即登录",
+        company: "公司",
+        allDocs: "所有文件",
+        policies: "政策",
+        handbooks: "员工手册",
+        guidelines: "指南",
+        departments: "部门",
+        other: "其他",
+        title: "ArcByte 档案中心",
+	view: "查看",
+	downloadpdf: "下载文档",
+        subtitle: "查询 ArcByte 团队公开的官方政策与资料",
+	abrules: "员工制度",
+	abregs: "流程标准",
+	abprocess: "流程制度",
+	abpriority: "处理优先级",
+	aairules: "员工制度",
+	aairegs: "流程标准",
+	aaionline: "网络安全",
+	aaiprivacy: "隐私与安全",
+	aaiother: "其他",
+	ancrules: "员工制度",
+	ancother: "其他",
+	text1title: "数据处理流程",
+	text2title: "网络安全管理流程",
+	text3title: "数据泄露应对流程",
+	text4title: "内容审核流程",
+	text5title: "用户安全与投诉处理流程",
+	text6title: "消费者保护流程",
+	text7title: "知识产权处理流程",
+	text8title: "儿童与未成年人保护流程",
+	text9title: "无障碍合规流程",
+	text10title: "金融与支付处理流程",
+	text11title: "雇佣与人力资源流程",
+	text12title: "合规监控与审计流程",
+	text13title: "透明度与问责流程",
+	text14title: "人工智能与自动化决策流程",
+	announcement: "📢 感谢您使用 ArcByte 档案中心，我们正在全力准备档案中心中，当前暂不支持正常使用。查看制作进度可以前往 status.arcbytecn.com 查看！",
+    }
+};
+
+function setLanguage(lang) {
+    localStorage.setItem("lang", lang);
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (translations[lang][key]) el.placeholder = translations[lang][key];
+    });
+}
+
+function closeAnnouncement() {
+    document.body.classList.remove("has-announcement");
+
+    const bar = document.querySelector(".announcement-bar");
+    if (bar) bar.remove();
+
+    localStorage.setItem("announcementClosed", "true");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const closed = localStorage.getItem("announcementClosed") === "false";
+
+    if (!closed) {
+        document.body.classList.add("has-announcement");
+    } else {
+        const bar = document.querySelector(".announcement-bar");
+        if (bar) bar.remove();
+    }
+});
+
+const savedLang = localStorage.getItem("lang") || "en";
+document.getElementById("langSwitcher").value = savedLang;
+setLanguage(savedLang);
+</script>
+
+</body>
+</html>
